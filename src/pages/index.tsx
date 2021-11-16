@@ -1,4 +1,4 @@
-import { GetServerSideProps } from 'next';
+import { GetStaticProps } from 'next';
 import Image from 'next/image';
 import Head from 'next/head';
 
@@ -42,7 +42,17 @@ export default function Home({ product }: HomeProps) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
+  // Client-side - Informação quando o usuario acessa a pagina.
+  // Server-side - Quando há necessiidade de indexação de dados, e podemos ser mais dinamicos
+  // Static Site Generation - Salvar HTML
+
+  // Post do Blog 
+
+  // Conteudo (SSG)
+  // Comentarios (Client-side)
+  // Posts (SSR)
+  
   const price = await stripe.prices.retrieve('price_1JwUkGB2iBcLQdU10BUH4b6Y')
 
   const product = {
@@ -56,7 +66,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
       product,
-    }
+    },
+    revalidate: 60 * 60 * 24, // 1 day
   }
 
 }
