@@ -1,3 +1,4 @@
+import { useSession, signIn } from 'next-auth/client';
 import styles from './styles.module.scss';
 
 interface SubscribeButtonProps {
@@ -5,8 +6,22 @@ interface SubscribeButtonProps {
 }
 
 export function SubscribeButton({ priceId }: SubscribeButtonProps) {
+  const [session] = useSession();
+  function handleSubscribe() {
+    if(!session) {
+      signIn('github');
+      return;
+    }
+
+    // requisição da checkout session
+    
+  } 
   return (
-    <button className={styles.subscribeButton} type="button">
+    <button 
+      type="button"
+      className={styles.subscribeButton}
+      onClick={handleSubscribe}
+    >
       Subscribe Now
     </button>
   );
