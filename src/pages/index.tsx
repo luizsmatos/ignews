@@ -10,7 +10,7 @@ interface HomeProps {
   product: {
     priceId: string;
     amount: number;
-  }
+  };
 }
 
 export default function Home({ product }: HomeProps) {
@@ -21,15 +21,17 @@ export default function Home({ product }: HomeProps) {
       </Head>
       <main className={styles.contentContainer}>
         <section className={styles.hero}>
-          <span>👋 <span>Hey, welcome.</span></span>
+          <span>
+            👋 <span>Hey, welcome.</span>
+          </span>
           <h1>
             News about the <span>React</span> world.
           </h1>
           <p>
             Get access to all the publications <br />
-            <span>for { product.amount } month</span>
+            <span>for {product.amount} month</span>
           </p>
-          <SubscribeButton priceId={ product.priceId } />
+          <SubscribeButton priceId={product.priceId} />
         </section>
         <Image
           src="/images/avatar.svg"
@@ -47,13 +49,13 @@ export const getStaticProps: GetStaticProps = async () => {
   // Server-side - Quando há necessiidade de indexação de dados, e podemos ser mais dinamicos
   // Static Site Generation - Salvar HTML
 
-  // Post do Blog 
+  // Post do Blog
 
   // Conteudo (SSG)
   // Comentarios (Client-side)
   // Posts (SSR)
-  
-  const price = await stripe.prices.retrieve('price_1JwUkGB2iBcLQdU10BUH4b6Y')
+
+  const price = await stripe.prices.retrieve('price_1JwUkGB2iBcLQdU10BUH4b6Y');
 
   const product = {
     priceId: price.id,
@@ -68,6 +70,5 @@ export const getStaticProps: GetStaticProps = async () => {
       product,
     },
     revalidate: 60 * 60 * 24, // 1 day
-  }
-
-}
+  };
+};
