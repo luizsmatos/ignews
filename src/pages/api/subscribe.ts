@@ -15,9 +15,10 @@ type User = {
 
 async function Subscribe(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    // Recupera o token do usuário, salvo nos cookies
+    // Recupera o token do usuário, salvo nos cookies.
     const session = await getSession({ req });
 
+    // Recupera o usuário no faunaDB, pelo email.
     const user = await fauna.query<User>(
       q.Get(q.Match(q.Index('users_by_email'), q.Casefold(session.user.email)))
     );

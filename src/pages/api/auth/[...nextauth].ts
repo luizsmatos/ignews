@@ -20,10 +20,9 @@ export default NextAuth({
     async signIn(user, account, profile) {
       try {
         const { email } = user;
-        console.log(email)
                   
         await fauna.query(
-          q.If(
+          q.If( // verifica se o usuario não existe no faunaDB
             q.Not(
               q.Exists(
                 q.Match(
@@ -32,11 +31,11 @@ export default NextAuth({
                 )
               )
             ),
-            q.Create(
+            q.Create( // caso não exista, cria o usuario no faunaDB
               q.Collection('users'),
               { data: { email } }
             ),
-            q.Get(
+            q.Get( // caso exista, atualiza o usuario no faunaDB
               q.Match(
                 q.Index("users_by_email"),
                 q.Casefold(email),
