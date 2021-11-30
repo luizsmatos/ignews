@@ -1,8 +1,9 @@
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { SignInButton } from '../SignInButton';
-import Link from 'next/link';
 
 import styles from './styles.module.scss';
+import { ActiveLink } from '../ActiveLink';
 
 export function Header() {
   return (
@@ -10,12 +11,12 @@ export function Header() {
       <div className={styles.headerContent}>
         <Image src="/images/logo.svg" alt="ig.news" width={110} height={31} />
         <nav>
-          <Link href="/">
-            <a className={styles.active}>Home</a>
-          </Link>
-          <Link href="/posts" prefetch>
-            <a href="">Posts</a>
-          </Link>
+          <ActiveLink href="/" activeClassName={styles.active}>
+            <a>Home</a>
+          </ActiveLink>
+          <ActiveLink href="/posts" activeClassName={styles.active} prefetch>
+            <a>Posts</a>
+          </ActiveLink>
         </nav>
         <SignInButton />
       </div>
