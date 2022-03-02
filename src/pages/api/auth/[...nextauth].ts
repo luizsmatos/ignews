@@ -1,53 +1,80 @@
 import { query as q } from 'faunadb';
 
-import NextAuth from "next-auth"
-import Providers from "next-auth/providers"
+import NextAuth from 'next-auth';
+import Providers from 'next-auth/providers';
 
-import { fauna } from "../../../services/fauna"
+import { fauna } from '../../../services/fauna';
 
 export default NextAuth({
   providers: [
     Providers.GitHub({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      scope: 'read:user'
+      scope: 'read:user',
     }),
   ],
   jwt: {
     signingKey: process.env.JWT_SIGNING_KEY,
   },
   callbacks: {
+    async session(session) {
+      try {
+        const userActiveSubscription = await fauna.query(
+          q.Get(
+            q.Intersection([
+              q.Match(
+                q.Index('subscription_by_user_ref'),
+                q.Select(
+                  'ref',
+                  q.Get(
+                    q.Match(
+                      q.Index('users_by_email'),
+                      q.Casefold(session.user.email)
+                    )
+                  )
+                )
+              ),
+              q.Match(q.Index('subscription_by_status'), 'active'),
+            ])
+          )
+        );
+
+        return {
+          ...session,
+          activeSubscription: userActiveSubscription,
+        };
+      } catch {
+        return session;
+      }
+    },
     async signIn(user, account, profile) {
       try {
         const { email } = user;
-                  
+
         await fauna.query(
-          q.If( // verifica se o usuario não existe no faunaDB
+          q.If(
+            // verifica se o usuario não existe no faunaDB
             q.Not(
               q.Exists(
-                q.Match(
-                  q.Index("users_by_email"),
-                  q.Casefold(user.email)
-                )
+                q.Match(q.Index('users_by_email'), q.Casefold(user.email))
               )
             ),
-            q.Create( // caso não exista, cria o usuario no faunaDB
+            q.Create(
+              // caso não exista, cria o usuario no faunaDB
               q.Collection('users'),
               { data: { email } }
             ),
-            q.Get( // caso exista, atualiza o usuario no faunaDB
-              q.Match(
-                q.Index("users_by_email"),
-                q.Casefold(email),
-              )
-            ),
+            q.Get(
+              // caso exista, atualiza o usuario no faunaDB
+              q.Match(q.Index('users_by_email'), q.Casefold(email))
+            )
           )
         );
         return true;
-      } catch(err) {
-        console.log(err)
-        return false
+      } catch (err) {
+        console.log(err);
+        return false;
       }
     },
-  }
-})
+  },
+});
