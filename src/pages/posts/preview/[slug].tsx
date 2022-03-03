@@ -1,6 +1,5 @@
-import { GetStaticProps } from "next";
+import { GetStaticPaths, GetStaticProps } from "next";
 import { useSession } from "next-auth/client";
-import { redirect } from "next/dist/server/api-utils";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -58,7 +57,7 @@ export default function PostPreview({ post }: PostPreviewProps) {
   );
 }
 
-export const getStaticPaths = () => {
+export const getStaticPaths: GetStaticPaths = async() => {
   return {
     paths: [],
     fallback: 'blocking',
